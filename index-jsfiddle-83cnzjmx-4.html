@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html>
+
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JSFiddle 83cnzjmx</title>
+
+  <style>
+    /* ===== Base Styles ===== */
+:root {
+  --primary: #3b82f6;
+  --primary-dark: #2563eb;
+  --secondary: #f59e0b;
+  --dark: #1f2937;
+  --light: #f9fafb;
+  --success: #10b981;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+  min-height: 100vh;
+  margin: 0;
+  padding: 2rem;
+  color: var(--dark);
+}
+
+/* ===== Converter Container ===== */
+.converter-container {
+  max-width: 800px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+/* ===== Header ===== */
+.header {
+  background: linear-gradient(to right, var(--primary), var(--primary-dark));
+  color: white;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.header p {
+  margin: 0.5rem 0 0;
+  opacity: 0.9;
+  font-size: 0.9rem;
+}
+
+/* ===== Converter Body ===== */
+.converter-body {
+  padding: 2rem;
+  display: grid;
+  gap: 1.5rem;
+}
+
+.input-group {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.input-card {
+  background: var(--light);
+  border-radius: 8px;
+  padding: 1rem;
+  border: 1px solid #e5e7eb;
+}
+
+.input-card label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #4b5563;
+}
+
+.input-card input, 
+.input-card select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+.input-card input:focus, 
+.input-card select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.currency-select {
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  background-size: 1rem;
+  appearance: none;
+}
+
+/* ===== Buttons ===== */
+.action-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.btn-primary, .btn-secondary {
+  border: none;
+  padding: 1rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  background: white;
+  color: var(--primary);
+  border: 1px solid var(--primary);
+}
+
+.btn-secondary:hover {
+  background: #f0f5ff;
+}
+
+/* ===== Results ===== */
+.result-card {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-align: center;
+  margin-top: 1rem;
+  display: none;
+}
+
+.result-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #166534;
+  margin-bottom: 0.5rem;
+}
+
+.rate-value {
+  font-size: 1rem;
+  color: #4b5563;
+  margin-bottom: 0.5rem;
+}
+
+.timestamp {
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-style: italic;
+}
+
+/* ===== History ===== */
+.history-section {
+  margin-top: 2rem;
+}
+
+.history-section h3 {
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+  color: #374151;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.history-list {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.history-item {
+  display: grid;
+  grid-template-columns: 1fr 1fr 2fr;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 0.875rem;
+}
+
+.history-item:last-child {
+  border-bottom: none;
+}
+
+.history-item:nth-child(even) {
+  background: #f9fafb;
+}
+
+/* ===== Loading Overlay ===== */
+#loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  z-index: 1000;
+  display: none;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: var(--primary);
+  animation: spin 1s ease-in-out infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 640px) {
+  .input-group {
+    grid-template-columns: 1fr;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+  }
+}
+  </style>
+
+  
+</head>
+<body>
+  <!DOCTYPE html>
+<html>
+<head>
+  <title>ProTrader Currency Converter</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="converter-container">
+    <!-- Header -->
+    <div class="header">
+      <h1><i class="fas fa-chart-line"></i> ProTrader FX</h1>
+      <p>Real-time institutional-grade currency converter</p>
+    </div>
+    
+    <!-- Converter Body -->
+    <div class="converter-body">
+      <!-- Input Section -->
+      <div class="input-group">
+        <div class="input-card">
+          <label for="amount"><i class="fas fa-money-bill-wave"></i> Amount</label>
+          <input type="number" id="amount" value="1000" min="0" step="0.01">
+        </div>
+        
+        <div class="input-card">
+          <label for="from-currency"><i class="fas fa-flag"></i> From</label>
+          <select id="from-currency" class="currency-select">
+            <!-- Currencies will be added by JavaScript -->
+          </select>
+        </div>
+        
+        <div class="input-card">
+          <label for="to-currency"><i class="fas fa-flag"></i> To</label>
+          <select id="to-currency" class="currency-select">
+            <!-- Currencies will be added by JavaScript -->
+          </select>
+        </div>
+      </div>
+      
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <button id="convert-btn" class="btn-primary">
+          <i class="fas fa-exchange-alt"></i> Convert
+        </button>
+        <button id="swap-btn" class="btn-secondary">
+          <i class="fas fa-retweet"></i> Swap
+        </button>
+      </div>
+      
+      <!-- Results -->
+      <div id="result" class="result-card">
+        <div id="conversion-result" class="result-value"></div>
+        <div id="exchange-rate" class="rate-value"></div>
+        <div id="last-updated" class="timestamp"></div>
+      </div>
+      
+      <!-- History -->
+      <div class="history-section">
+        <h3><i class="fas fa-history"></i> Conversion History</h3>
+        <div class="history-list" id="history-list"></div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Loading Overlay -->
+  <div id="loading-overlay">
+    <div class="spinner"></div>
+    <p>Fetching live rates...</p>
+  </div>
+</body>
+</html>
+
+  <script>
+    // ===== Currency Data =====
+const currencies = [
+  { code: "USD", name: "US Dollar", symbol: "$", flag: "🇺🇸" },
+  { code: "EUR", name: "Euro", symbol: "€", flag: "🇪🇺" },
+  { code: "GBP", name: "British Pound", symbol: "£", flag: "🇬🇧" },
+  { code: "JPY", name: "Japanese Yen", symbol: "¥", flag: "🇯🇵" },
+  { code: "AUD", name: "Australian Dollar", symbol: "A$", flag: "🇦🇺" },
+  { code: "CAD", name: "Canadian Dollar", symbol: "C$", flag: "🇨🇦" },
+  { code: "CHF", name: "Swiss Franc", symbol: "CHF", flag: "🇨🇭" },
+  { code: "CNY", name: "Chinese Yuan", symbol: "¥", flag: "🇨🇳" },
+  { code: "INR", name: "Indian Rupee", symbol: "₹", flag: "🇮🇳" },
+  { code: "SGD", name: "Singapore Dollar", symbol: "S$", flag: "🇸🇬" },
+  // Add more currencies as needed...
+];
+
+// ===== Exchange Rate Simulation =====
+const baseRates = {
+  USD: { EUR: 0.93, GBP: 0.79, JPY: 144.50, AUD: 1.52, CAD: 1.35, CHF: 0.89, CNY: 7.25, INR: 83.12, SGD: 1.35 },
+  EUR: { USD: 1.07, GBP: 0.85, JPY: 155.20, AUD: 1.63, CAD: 1.45, CHF: 0.96, CNY: 7.80, INR: 89.45, SGD: 1.45 },
+  GBP: { USD: 1.26, EUR: 1.18, JPY: 183.40, AUD: 1.92, CAD: 1.71, CHF: 1.13, CNY: 9.20, INR: 105.60, SGD: 1.71 },
+  // Add more base rates...
+};
+
+function getMarketRate(base, target) {
+  // Simulate real market with slight fluctuations
+  const baseRate = baseRates[base]?.[target] || 1;
+  const variance = (Math.random() * 0.1) - 0.05; // -5% to +5%
+  return baseRate * (1 + variance);
+}
+
+// ===== DOM Elements =====
+const fromCurrencySelect = document.getElementById('from-currency');
+const toCurrencySelect = document.getElementById('to-currency');
+const convertBtn = document.getElementById('convert-btn');
+const swapBtn = document.getElementById('swap-btn');
+const amountInput = document.getElementById('amount');
+const resultCard = document.getElementById('result');
+const conversionResult = document.getElementById('conversion-result');
+const exchangeRate = document.getElementById('exchange-rate');
+const lastUpdated = document.getElementById('last-updated');
+const historyList = document.getElementById('history-list');
+const loadingOverlay = document.getElementById('loading-overlay');
+
+// ===== State =====
+let conversionHistory = JSON.parse(localStorage.getItem('conversionHistory')) || [];
+
+// ===== Initialize =====
+function init() {
+  populateCurrencyDropdowns();
+  loadConversionHistory();
+  setDefaultCurrencies();
+  
+  // Add sample history if empty
+  if (conversionHistory.length === 0) {
+    addToHistory('USD', 'EUR', 100, 93.45, 0.9345);
+    addToHistory('EUR', 'GBP', 200, 170.80, 0.8540);
+    addToHistory('JPY', 'USD', 10000, 69.20, 0.00692);
+  }
+}
+
+function populateCurrencyDropdowns() {
+  currencies.forEach(currency => {
+    const option1 = createCurrencyOption(currency);
+    const option2 = createCurrencyOption(currency);
+    
+    fromCurrencySelect.appendChild(option1);
+    toCurrencySelect.appendChild(option2);
+  });
+}
+
+function createCurrencyOption(currency) {
+  const option = document.createElement('option');
+  option.value = currency.code;
+  option.textContent = `${currency.flag} ${currency.code} - ${currency.name}`;
+  return option;
+}
+
+function setDefaultCurrencies() {
+  fromCurrencySelect.value = 'USD';
+  toCurrencySelect.value = 'EUR';
+}
+
+// ===== Conversion Functions =====
+function convertCurrency() {
+  const amount = parseFloat(amountInput.value);
+  const fromCurrency = fromCurrencySelect.value;
+  const toCurrency = toCurrencySelect.value;
+  
+  if (isNaN(amount) || amount <= 0) {
+    showError('Please enter a valid amount');
+    return;
+  }
+  
+  showLoading();
+  
+  // Simulate API delay
+  setTimeout(() => {
+    try {
+      const rate = getMarketRate(fromCurrency, toCurrency);
+      const convertedAmount = amount * rate;
+      
+      displayResult(fromCurrency, toCurrency, amount, convertedAmount, rate);
+      addToHistory(fromCurrency, toCurrency, amount, convertedAmount, rate);
+      
+      hideLoading();
+    } catch (error) {
+      hideLoading();
+      showError('Failed to fetch exchange rates');
+    }
+  }, 1000);
+}
+
+function displayResult(from, to, amount, result, rate) {
+  const fromCurrency = currencies.find(c => c.code === from);
+  const toCurrency = currencies.find(c => c.code === to);
+  
+  conversionResult.innerHTML = `
+    <span class="from-amount">${formatCurrency(amount, from)}</span>
+    <i class="fas fa-arrow-right"></i>
+    <span class="to-amount">${formatCurrency(result, to)}</span>
+  `;
+  
+  exchangeRate.textContent = `1 ${from} = ${rate.toFixed(6)} ${to}`;
+  lastUpdated.textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
+  
+  resultCard.style.display = 'block';
+}
+
+function swapCurrencies() {
+  const temp = fromCurrencySelect.value;
+  fromCurrencySelect.value = toCurrencySelect.value;
+  toCurrencySelect.value = temp;
+}
+
+// ===== History Functions =====
+function addToHistory(from, to, amount, result, rate) {
+  const historyItem = {
+    from,
+    to,
+    amount,
+    result,
+    rate,
+    timestamp: new Date().toISOString()
+  };
+  
+  conversionHistory.unshift(historyItem);
+  if (conversionHistory.length > 10) conversionHistory.pop();
+  
+  saveHistory();
+  updateHistoryUI();
+}
+
+function loadConversionHistory() {
+  updateHistoryUI();
+}
+
+function updateHistoryUI() {
+  historyList.innerHTML = '';
+  
+  conversionHistory.slice(0, 5).forEach(item => {
+    const historyItem = document.createElement('div');
+    historyItem.className = 'history-item';
+    
+    const fromCurrency = currencies.find(c => c.code === item.from);
+    const toCurrency = currencies.find(c => c.code === item.to);
+    
+    historyItem.innerHTML = `
+      <span>${fromCurrency?.flag || ''} ${item.from} → ${toCurrency?.flag || ''} ${item.to}</span>
+      <span>${formatCurrency(item.amount, item.from)}</span>
+      <span>${formatCurrency(item.result, item.to)} @ ${item.rate.toFixed(6)}</span>
+    `;
+    
+    historyList.appendChild(historyItem);
+  });
+}
+
+function saveHistory() {
+  localStorage.setItem('conversionHistory', JSON.stringify(conversionHistory));
+}
+
+// ===== Helper Functions =====
+function formatCurrency(amount, currencyCode) {
+  const currency = currencies.find(c => c.code === currencyCode);
+  const symbol = currency?.symbol || currencyCode;
+  
+  return new Intl.NumberFormat(undefined, {
+    style: 'currency',
+    currency: currencyCode,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 6
+  }).format(amount).replace(currencyCode, symbol);
+}
+
+function showLoading() {
+  loadingOverlay.style.display = 'flex';
+  convertBtn.disabled = true;
+  convertBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing';
+}
+
+function hideLoading() {
+  loadingOverlay.style.display = 'none';
+  convertBtn.disabled = false;
+  convertBtn.innerHTML = '<i class="fas fa-exchange-alt"></i> Convert';
+}
+
+function showError(message) {
+  alert(message); // In production, replace with a proper error display
+}
+
+// ===== Event Listeners =====
+convertBtn.addEventListener('click', convertCurrency);
+swapBtn.addEventListener('click', swapCurrencies);
+
+// Initialize the app
+init();
+  </script>
+</body>
+</html>
